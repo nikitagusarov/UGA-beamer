@@ -1,0 +1,682 @@
+%%
+% University Grenoble Alpes (UGA) beamer pandoc template
+% Created by Nikita Gusarov (nikita.gusarov@univ-grenoble-alpes.fr) 2022
+%
+% Original style for beamer provided by Vasilii Feofanov (vasilii.feofanov@univ-grenoble-alpes.fr) 2019-2022
+% Source code may be found at https://github.com/vfeofanov/uga-beamer-template under GPL-3 LICENSE
+%
+% Redistribution and use in source and binary forms, with or without
+% modification, are permitted provided that the following conditions
+% are met:
+%
+% - Redistributions of source code must retain the above copyright
+% notice, this list of conditions and the following disclaimer.
+%
+% - Redistributions in binary form must reproduce the above copyright
+% notice, this list of conditions and the following disclaimer in the
+% documentation and/or other materials provided with the distribution.
+%
+% - Neither the name of John MacFarlane nor the names of other
+% contributors may be used to endorse or promote products derived
+% from this software without specific prior written permission.
+%
+% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+% "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+% LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+% FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+% COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+% INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+% BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+% LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+% CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+% LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+% ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+% POSSIBILITY OF SUCH DAMAGE.
+%%
+
+\documentclass[
+  $if(fontsize)$
+    $fontsize$,
+  $endif$
+  $if(papersize)$
+    $papersize$paper,
+  $endif$
+  $if(beamer)$
+    ignorenonframetext,
+    $if(handout)$
+      handout,
+    $endif$
+    $if(aspectratio)$
+      aspectratio=$aspectratio$,
+    $endif$
+  $endif$
+  $for(classoption)$
+    $classoption$$sep$,
+  $endfor$
+]{beamer}
+
+% Preset beamer style
+\usetheme{Copenhagen}
+\beamertemplatenavigationsymbolsempty
+
+% Copied from main file
+$if(background-image)$
+  \usebackgroundtemplate{%
+    \includegraphics[width=\paperwidth]{$background-image$}%
+  }
+$endif$
+
+% Graphics path
+$if(graphics-path)$
+  \graphicspath{{./logos/},$for(graphics-path)${$graphics-path$}$sep$,$endfor$}
+$else$
+  \graphicspath{{./logos/},{./figures/},{./tables/}}
+$endif$
+
+% Theorem formating
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}
+}
+
+% Pgf pages
+\usepackage{pgfpages}
+
+% Captions
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+
+% External beamer options
+$for(beameroption)$
+  \setbeameroption{$beameroption$}
+$endfor$
+
+% Prevent slide breaks in the middle of a paragraph
+\widowpenalties 1 10000
+\raggedbottom
+
+% Section title formating
+$if(section-titles)$
+  \setbeamertemplate{part page}{
+    \centering
+    \begin{beamercolorbox}[sep=16pt,center]{part title}
+        \usebeamerfont{part title}\insertpart\par
+    \end{beamercolorbox}
+  }
+  \setbeamertemplate{section page}{
+    \centering
+    \begin{beamercolorbox}[sep=12pt,center]{part title}
+      \usebeamerfont{section title}\insertsection\par
+    \end{beamercolorbox}
+  }
+  \setbeamertemplate{subsection page}{
+    \centering
+    \begin{beamercolorbox}[sep=8pt,center]{part title}
+      \usebeamerfont{subsection title}\insertsubsection\par
+    \end{beamercolorbox}
+  }
+  \AtBeginPart{
+    \frame{\partpage}
+  }
+  \AtBeginSection{
+    \ifbibliography
+    \else
+    \frame{\sectionpage}
+    \fi
+  }
+  \AtBeginSubsection{
+    \frame{\subsectionpage}
+  }
+$endif$
+
+% Fonts 
+% Font theme
+$if(fonttheme)$
+  \usefonttheme{$fonttheme$}
+$endif$
+% Main font (serif by default)
+$if(mainfont)$
+  \usefonttheme{serif} % use mainfont rather than sansfont for slide text
+$endif$
+% Encoding (utf8 default)
+\usepackage[$if(inputenc)$$inputenc$$else$utf8$endif$]{inputenc}
+% Font encoding (T1 by default)
+\usepackage[$if(fontenc)$$fontenc$$else$T1$endif$]{fontenc}
+% Math fonts
+\usepackage{amsmath}
+\usefonttheme[onlymath]{serif} % article font style
+% Font family
+$if(fontfamily)$
+  \usepackage[$for(fontfamilyoptions)$$fontfamilyoptions$$sep$,$endfor$]{$fontfamily$}
+$else$
+  \usepackage{lmodern}
+$endif$
+% Main font
+$if(mainfont)$
+  \setmainfont[$for(mainfontoptions)$$mainfontoptions$$sep$,$endfor$]{$mainfont$}
+$endif$
+% Sans font
+$if(sansfont)$
+  \setsansfont[$for(sansfontoptions)$$sansfontoptions$$sep$,$endfor$]{$sansfont$}
+$endif$
+% Mono font
+$if(monofont)$
+  \setmonofont[$for(monofontoptions)$$monofontoptions$$sep$,$endfor$]{$monofont$}
+$endif$
+% Font families
+$for(fontfamilies)$
+  \newfontfamily{$fontfamilies.name$}[$for(fontfamilies.options)$$fontfamilies.options$$sep$,$endfor$]{$fontfamilies.font$}
+$endfor$
+% Math font
+$if(mathfont)$
+  $if(mathspec)$
+    \ifXeTeX
+      \setmathfont(Digits,Latin,Greek)[$for(mathfontoptions)$$mathfontoptions$$sep$,$endfor$]{$mathfont$}
+    \else
+      \setmathfont[$for(mathfontoptions)$$mathfontoptions$$sep$,$endfor$]{$mathfont$}
+    \fi
+  $else$
+    \setmathfont[$for(mathfontoptions)$$mathfontoptions$$sep$,$endfor$]{$mathfont$}
+  $endif$
+$endif$
+
+% Support for links and urls
+\usepackage{url}
+
+% Geometry
+$if(geometry)$
+  \geometry{$for(geometry)$$geometry$$sep$,$endfor$}
+$endif$
+
+% Bibliography condition
+\newif\ifbibliography
+
+% Tables
+$if(tables)$
+  \usepackage{longtable,booktabs,array}
+  $if(multirow)$
+    \usepackage{multirow}
+  $endif$
+  \usepackage{calc} % for calculating minipage widths
+  \usepackage{caption}
+  % Make caption package work with longtable
+  \makeatletter
+  \def\fnum@table{\tablename~\thetable}
+  \makeatother
+$endif$
+
+% Graphics
+$if(graphics)$
+    \usepackage{graphicx}
+    \makeatletter
+    \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+    \def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+    \makeatother
+    % Scale images if necessary, so that they will not overflow the page
+    % margins by default, and it is still possible to overwrite the defaults
+    % using explicit options in \includegraphics[width, height, ...]{}
+    \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+    % Set default figure placement to htbp
+    \makeatletter
+    \def\fps@figure{htbp}
+    \makeatother
+$endif$
+
+% CSL references
+% No natbib / bibtex support for now
+$if(csl-refs)$
+  \newlength{\cslhangindent}
+  \setlength{\cslhangindent}{1.5em}
+  \newlength{\csllabelwidth}
+  \setlength{\csllabelwidth}{3em}
+  \newlength{\cslentryspacingunit} % times entry-spacing
+  \setlength{\cslentryspacingunit}{\parskip}
+  \newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+  {% don't indent paragraphs
+    \setlength{\parindent}{0pt}
+    % turn on hanging indent if param 1 is 1
+    \ifodd #1
+    \let\oldpar\par
+    \def\par{\hangindent=\cslhangindent\oldpar}
+    \fi
+    % set entry spacing
+    \setlength{\parskip}{#2\cslentryspacingunit}
+  }{}
+  \usepackage{calc}
+  \newcommand{\CSLBlock}[1]{#1\hfill\break}
+  \newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+  \newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+  \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
+$endif$
+
+% Include in header
+$for(header-includes)$
+  $header-includes$
+$endfor$
+
+% Title page information
+% Title
+$if(title)$
+  \title{$title$}
+$endif$
+% Subtitle
+$if(subtitle)$
+  \subtitle{$subtitle$}
+$endif$
+% Authors
+$if(author)$
+  \author[$if(shortauthor)$$shortauthor$$else$$author$$endif$]{$author$}
+$endif$
+% Institution (default Université Grenoble Alpes)
+$if(institute)$
+  \institute{$institute$}
+$else$
+  \institute{Université Grenoble Alpes}
+$endif$
+% Date (default today)
+$if(date)$
+  \date{$date$}
+$else$
+  \date{\today}
+$endif$
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% Custom style definition %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Original style provided by Vasilii Feofanov (vasilii.feofanov@univ-grenoble-alpes.fr) 2019-2022
+% Source code may be found at https://github.com/vfeofanov/uga-beamer-template under GPL-3 LICENSE
+%
+% Modified and adjusted for pandoc integration by Nikita  Gusarov (nikita.gusarov@univ-grenoble-alpes.fr) 2022
+
+% Website hyperlinks for different elements
+\def\uga{https://www.univ-grenoble-alpes.fr/}
+\def\ginp{https://www.grenoble-inp.fr/}
+\def\feg{https://economie.univ-grenoble-alpes.fr/}
+\def\gael{https://gael.univ-grenoble-alpes.fr/}
+\def\gscop{https://g-scop.grenoble-inp.fr/}
+\def\cnrs{https://www.cnrs.fr/}
+\def\inrae{https://www.inrae.fr/}
+
+
+% ==========================================================================
+% Titlepage structure
+% ==========================================================================
+
+% Alternative layouts (defaults to seminar)
+$if(class)$
+  \newcommand\argum{$class$} % defines the title style
+$else$
+  \newcommand\argum{seminar} % defines the title style
+$endif$
+\newcommand\condconf{conference} % for comparison
+\newcommand\condsem{seminar} % for comparison
+\def\maketitle{\ifbeamer@inframe\titlepage\else\frame[plain]{\titlepage}\fi}
+\def\titlepage{\usebeamertemplate{title page}}
+\usepackage{changepage}
+
+% Padding
+$if(padding)$
+  \def\padding{$padding$}
+$else$
+  \def\padding{0cm}
+$endif$
+
+% Title page structures
+\ifx\argum\condconf
+  \setbeamertemplate{title page}
+  {%
+    \begin{adjustwidth}{\padding}{\padding}%
+    \vspace{-0.5cm}%
+    $if(logos)$
+      \vspace*{5mm}%
+      $for(logos)$
+        \href{\$it$}{\includegraphics[height=10mm]{./logo-$it$.png}} \hspace{1mm}%
+      $endfor$
+      \par%
+    $endif$
+    \vspace*{5mm}%
+    \ifx\insertsubtitle\@empty%
+    \else%
+      \begin{beamercolorbox}[sep=8pt,colsep=-6bp,rounded=true]{title}%
+        \usebeamerfont{title}\inserttitle\par%
+      \end{beamercolorbox}%
+      \vspace*{2.5mm}%
+      \fi
+    \ifx\insertauthor\@empty%
+    \else%
+    	{\usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor\par}%
+    \fi%
+    $if(credits)$
+      {\usebeamerfont{author}\small\usebeamercolor[fg]{author}$credits$\par}%
+    $endif$
+    \ifx\insertinstitut\@empty%
+    \else%
+    	\vspace*{0.3cm}%
+    	{\usebeamerfont{institute}\usebeamercolor[fg]{institute}\insertinstitute\par}%
+    \fi% 
+    $if(email)$
+      {\usebeamerfont{institute}\usebeamercolor[fg]{institute}$email$\par}%
+    $endif$
+    \vfill
+    \ifx\insertsubtitle\@empty%
+    \else%
+    	{\usebeamerfont{subtitle}\insertsubtitle\par}%
+    	\vspace*{0.5mm}%
+    \fi%
+    \ifx\insertdate\@empty%
+    \else%
+    	{\usebeamerfont{date}\usebeamercolor[fg]{date}\insertdate\par}%
+    \fi% 
+    \vspace{-0.5cm}
+    \end{adjustwidth}
+  }
+\fi
+\ifx\argum\condsem
+  \setbeamertemplate{title page}
+  {%
+    \begin{adjustwidth}{\padding}{\padding}%
+    \vspace{-0.5cm}%
+    $if(logos)$
+      \vspace*{5mm}%
+      $for(logos)$
+        \href{\$it$}{\includegraphics[height=10mm]{./logo-$it$.png}} \hspace{1mm}%
+      $endfor$
+      \par%
+    $endif$
+    \vspace*{5mm}%
+    \ifx\insertsubtitle\@empty%
+    \else%
+      \begin{beamercolorbox}[sep=8pt,colsep=-6bp,rounded=true]{title}%
+        \usebeamerfont{title}\inserttitle\par%
+      \end{beamercolorbox}%
+      \vspace*{2.5mm}%
+    \fi%
+    \ifx\insertsubtitle\@empty%
+    \else%
+    	{\usebeamerfont{subtitle}\insertsubtitle\par}%
+    	\vspace*{1.5mm}
+    \fi%
+    \ifx\insertdate\@empty%
+    \else%
+    	{\usebeamerfont{date}\usebeamercolor[fg]{date}\insertdate\par}%
+    \fi% 
+    \vfill%
+    %\vspace{3cm}%
+    \ifx\insertauthor\@empty%
+    \else%
+    	{\usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor\par}%
+    \fi%
+    $if(credits)$
+      {\usebeamerfont{author}\small\usebeamercolor[fg]{author}$credits$\par}%
+    $endif$
+    \ifx\insertinstitute\@empty%
+    \else%
+    	\vspace*{1mm}
+    	{\usebeamerfont{institute}\usebeamercolor[fg]{institute}\insertinstitute\par}%
+    \fi% 
+    $if(email)$
+      {\usebeamerfont{institute}\usebeamercolor[fg]{institute}$email$\par}%
+    $endif$
+    \vspace{-0.5cm}
+    \end{adjustwidth}
+  }%
+\fi
+
+% Date and subtitle size
+\setbeamerfont{date}{size=\footnotesize}
+\setbeamerfont{subtitle}{size=\footnotesize}
+
+% ==========================================================================
+% Frame
+% ==========================================================================
+
+% Remove the default headline with sections
+\setbeamertemplate{headline}{}
+$if(margins)$
+  \setbeamersize{
+    text margin left=$margins.left$,
+    text margin right=$margins.right$
+  }
+$else$
+$endif$
+
+% place a white UGA logo in a frametitle
+\usepackage{textpos}
+\addtobeamertemplate{frametitle}{}{%
+  \begin{textblock*}{50mm}(.94\textwidth,-0.9cm)
+    \href{\$toplogo$}{\includegraphics[height=0.83cm]{./logo-$if(toplogo)$$toplogo$$else$uga$endif$-blanc-orange.png}}
+  \end{textblock*}
+}
+
+% add navigation system
+\addtobeamertemplate{navigation symbols}{}{%
+  \ifnum \theframenumber=0%
+  \else%
+    \usebeamerfont{footline}%
+    \usebeamercolor[fg]{black}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber%
+  \fi%
+}
+
+% proof without ending square
+\newenvironment{innerproof}{\renewcommand{\qedsymbol}{}\proof}{\endproof}
+
+% Setting fonts
+\setbeamerfont{section in toc}{size=\large}
+\setbeamertemplate{section in toc}[sections numbered]
+\setbeamertemplate{subsection in toc}[subsections numbered]
+
+% ==========================================================================
+% Coloring
+% ==========================================================================
+
+% Red and grey colors of the UGA logo (blue and orange in fact)
+\definecolor{ugablue}{HTML}{152d44}
+\definecolor{ugared}{HTML}{f75816}
+\definecolor{ugagrey}{HTML}{84949c}
+\definecolor{ugaorange}{HTML}{f79216}
+\definecolor{ugayellow}{HTML}{F7C816}
+\definecolor{ugagreen}{HTML}{4a9e20}
+\definecolor{ugapurple}{HTML}{9e2089}
+
+% Some tests and other color suggestions
+% # Blue
+% "#152d44",
+% "#442C15", # Complementary
+% "#151544", "#154444", # Analogous
+% # Orange
+% "#f75816",
+% "#16B5F7", # Complementary
+% "#F7C816", "#F71644", # Analogous
+% # Other 1
+% "#9e2089", # Analogous
+% "#899e20", # Triadic
+% # Grey
+% "#84949c",
+% # Other 2
+% "#9e2089", "#415c70", # Analogous
+% "#442615", "#16d2f7", "#9c8c84", # Complementary
+% # Yellow
+% "#cfb418",
+% # Other 3
+% "#4a9e20", "#f79216", # Analogous
+% "#442615", "#16d2f7", "#9916f7", # Complementary
+% # White
+% "#ffffff",
+% # Other (no generator)
+% "#a13163"
+
+% Define palette color: main color will be blue, however most of elements will be orange colored manually below
+\usecolortheme[named=ugablue]{structure}
+\setbeamercolor{frametitle}{fg=white!50, bg=ugablue}
+\setbeamercolor{title}{fg=white,bg=ugablue}
+\setbeamercolor{local structure}{fg=ugablue}
+\setbeamercolor{section in toc}{fg=black,bg=white}
+\setbeamercolor{footline}{fg=ugablue!50, bg=white}
+\setbeamercolor{item projected}{fg=white,bg=ugablue}
+\setbeamercolor{author in head/foot}{fg=white, bg=ugared}
+\setbeamercolor{title in head/foot}{fg=white, bg=ugablue}
+\setbeamercolor{caption name}{fg=ugared}
+\setbeamercolor{block title}{bg=ugared!95}
+\setbeamercolor{block body}{bg=ugared!10}
+\setbeamercolor*{block body example}{bg=ugared!20}
+\setbeamercolor{block title alerted}{fg=white,bg=ugared!95}
+\setbeamercolor{block body alerted}{bg=ugared!10}
+
+% ==========================================================================
+% Itemize and Enumerate
+% ==========================================================================
+
+% Bullets with shadows
+\usepackage{tikz}
+\usetikzlibrary{shadows}
+\usetikzlibrary{shapes.misc}
+\tikzset{cross/.style={cross out, draw=black, minimum size=2*(#1-\pgflinewidth), inner sep=0pt, outer sep=0pt},
+%default radius will be 1pt. 
+cross/.default={1pt}}
+
+\newcommand*{\shadowcirclered}{\tikz \draw [baseline, fill=ugared,draw=ugared,drop shadow={shadow yshift=-1pt, shadow xshift=1pt, color=black!50}] circle (2pt);}
+\newcommand*{\shadowcirclegrey}{\tikz \draw [baseline, fill=ugablue,draw=ugablue,drop shadow={shadow yshift=-1pt, shadow xshift=1pt, color=black!50}] circle (2pt);}
+\newcommand*{\shadowsquarered}{\tikz \draw [baseline, fill=ugared,draw=ugared, drop shadow={shadow yshift=-1pt, shadow xshift=1pt, color=black!50}] rectangle (4pt,4pt);}
+\newcommand*{\shadowsquaregrey}{\tikz \draw [baseline, fill=ugared,draw=ugared, drop shadow={shadow yshift=-1pt, shadow xshift=1pt, color=black!50}] rectangle (4pt,4pt);}
+
+% shadow doesn't work
+\newcommand*{\shadowplus}{\tikz \draw [baseline, fill=ugared,draw=ugared, drop shadow={shadow yshift=-1pt, shadow xshift=1pt, color=black!50}] node[cross=3pt, very thick, rotate=45, color=ugared] {};}
+\newcommand*{\shadowminus}{\tikz \draw [baseline, fill=ugared,draw=ugared, drop shadow={shadow yshift=-1pt, shadow xshift=1pt, color=black!50}] node[cross=3pt, very thick, rotate=45, color=ugared] {};}
+
+\newcommand\pro{\item[\textcolor{ugared}{[latex]\bm{+}[/latex]}]}
+\newcommand\con{\item[\textcolor{ugablue}{[latex]\bm{-}[/latex]}]}
+
+\usepackage{xcolor}
+\newlength{\tmpShadow}
+\newcommand{\ourShadow}[2]{%
+  \settowidth{\tmpShadow}{#1}
+  \addtolength{\tmpShadow}{.1em}
+  \raisebox{-0.25ex}{\textcolor{black!50}{#1}}%
+  \kern-\tmpShadow%
+  \textcolor{#2}{#1}%
+}
+\newcommand*{\shadowtrianglered}{\ourShadow{[latex]\blacktriangleright[/latex]}{ugared!90}}
+
+\setbeamertemplate{itemize item}{\shadowsquarered}
+\setbeamertemplate{itemize subitem}{\shadowcirclegrey}
+\setbeamertemplate{itemize subsubitem}{\shadowtrianglered}
+
+\setbeamertemplate{enumerate items}[square]
+\setbeamercolor{item projected}{bg=ugared}
+
+% ==========================================================================
+% Code wrapping
+% ==========================================================================
+
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,fontsize=$if(code-block-font-size)$$code-block-font-size$$else$\small$endif$,commandchars=\\\{\}}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+
+% ==========================================================================
+% Footline
+% ==========================================================================
+
+\setbeamertemplate{footline}
+{
+  \ifnum \theframenumber=0%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.3\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+      \usebeamerfont{author in head/foot}%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.7\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+      \usebeamerfont{title in head/foot}%
+    \end{beamercolorbox}%
+  }%
+  \vskip0pt%
+  \else%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.3\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+      \usebeamerfont{author in head/foot}\textcolor{ugablue}{\insertshortauthor}
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.7\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+      \usebeamerfont{title in head/foot}\inserttitle
+    \end{beamercolorbox}%
+  }%
+  \vskip0pt%
+  \fi%
+}
+
+% ==========================================================================
+% Outline
+% ==========================================================================
+
+\newcommand*\bicolor[1]{\tikz[baseline=(char.base)]{
+  \fill[ugablue!80] (-.3,-.2) rectangle (0,.3);
+  \fill[black!30] (0,-.2) rectangle (.3,.3);
+  \node[color=white] (char) {#1};}}
+        
+\newcommand*\onereccolor[1]{\tikz[baseline=(char.base)]{
+  \fill[ugared!90] (-1.1,-.2) rectangle (.3,.3);
+  \node[color=white] (char) {#1};}} 
+
+\setbeamertemplate{section in toc}{%
+  \makebox[1em][r]{\bfseries\Large\onereccolor{\inserttocsectionnumber}}%
+  \parbox[t]{\dimexpr\linewidth-2em}{\ \inserttocsection}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%% End ustom style definition %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Begin document
+\begin{document}
+
+% Title frame
+$if(title)$
+{
+  \begin{frame}[label=intro,noframenumbering]
+    \titlepage
+  \end{frame}
+}
+$endif$
+
+% Include before text
+$for(include-before)$
+    $include-before$
+$endfor$
+
+% TOC
+$if(toc)$
+  $if(toc-title)$
+    \renewcommand*\contentsname{$toc-title$}
+  $endif$
+  \begin{frame}[allowframebreaks]
+    $if(toc-title)$
+      \frametitle{$toc-title$}
+    $endif$
+    \tableofcontents[hideallsubsections]
+  \end{frame}
+$endif$
+
+% LOF
+$if(lof)$
+  \listoffigures
+$endif$
+
+% LOT
+$if(lot)$
+  \listoftables
+$endif$
+
+% Main text body
+$body$
+
+% Include after body
+$for(include-after)$
+    $include-after$
+$endfor$
+
+\end{document}
+% End document
